@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lời Tỏ Tình</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+
+    <script>
+        const MUSIC_LINK = "https://raw.githubusercontent.com/khoaforknro/tinhto/refs/heads/main/audio_HIEUTHUHAI_download.mp3";
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; }
+
+        #rotate-message { position: fixed; inset: 0; background: #000; color: #ff69b4; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; text-align: center; padding: 20px; }
+        .phone-icon { width: 50px; height: 80px; border: 3px solid #ff69b4; border-radius: 10px; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; position: relative; }
+        .phone-icon::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #ff69b4; border-radius: 50%; }
+        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50%, 100% { transform: rotate(-90deg); } }
+
+        #main-content { display: none; width: 100%; height: 100%; position: relative; }
+        #matrixCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.8; pointer-events: none; }
+        
+        .text-overlay { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 2; }
+        
+        /* Hiệu ứng chuyển thoại mượt hơn: Dùng opacity và scale nhẹ */
+        .message { 
+            color: #fff; font-size: 4.5rem; font-weight: 900; 
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 40px #ff1493; 
+            opacity: 0; 
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            transform: scale(0.9);
+            text-align: center; max-width: 90%;
+        }
+        .message.active { opacity: 1; transform: scale(1); }
+        
+        .heart-neon { 
+            font-size: 8rem; color: #ff1493;
+            filter: drop-shadow(0 0 10px #ff1493) drop-shadow(0 0 20px #ff1493) drop-shadow(0 0 40px #ff1493);
+            animation: heartbeat 0.8s infinite cubic-bezier(0.215, 0.61, 0.355, 1); 
+        }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        @media screen and (orientation: landscape) { #rotate-message { display: none; } #main-content { display: block; } }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-message">
+        <div class="phone-icon"></div>
+        <p>Vui lòng xoay ngang thiết bị<br>(Chạm màn hình để bắt đầu)</p>
+    </div>
+
+    <div id="main-content">
+        <canvas id="matrixCanvas"></canvas>
+        <div class="text-overlay">
+            <div id="text-display" class="message"></div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop preload="auto">
+        <source id="audioSource" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const audio = document.getElementById('bgMusic');
+        audio.src = MUSIC_LINK;
+        audio.volume = 0.5; // Giảm nhạc nền xuống 80%
+        
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        initCanvas();
+        window.addEventListener('resize', initCanvas);
+
+        
+        const letters = "010101LOVEYOUFOREVERXYZ0123456789❤️🌸✨LOVE❤️🌸✨";
+        const fontSize = 14;
+        let columns = Math.floor(window.innerWidth / fontSize);
+        let drops = Array(columns).fill(1);
+        let frameCount = 0;
+
+        function drawMatrix() {
+            frameCount++;
+            if (frameCount % 2 !== 0) { requestAnimationFrame(drawMatrix); return; }
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "bold " + fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillStyle = (Math.random() > 0.98) ? "#ffffff" : "rgba(255, 20, 147, 0.4)";
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+            requestAnimationFrame(drawMatrix);
+        }
+        drawMatrix();
+
+       
+        function playHeartbeat(audioCtx) {
+            setInterval(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(60, audioCtx.currentTime);
+                gain.gain.setValueAtTime(1.5, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            }, 800);
+        }
+
+        const script = [
+            { text: "3", duration: 1000 },
+            { text: "2", duration: 1000 },
+            { text: "1", duration: 1000 },
+            { text: "Em ơi!", duration: 2000 },
+            { text: "Em đồng ý...", duration: 2000 },
+            { text: "Làm người yêu", duration: 2000 },
+            { text: "Của anh nhé?", duration: 2000 },
+            { text: "<div class='heart-neon'>❤️</div><span style='font-size: 3rem; text-shadow: 0 0 10px #ff1493;'>Anh Yêu Em</span>", duration: 40000, isFinal: true }
+        ];
+
+        const textDisplay = document.getElementById('text-display');
+        let currentStep = 0;
+        let started = false;
+
+        function runScript() {
+            if (currentStep < script.length) {
+                const step = script[currentStep];
+                textDisplay.innerHTML = step.text;
+                textDisplay.classList.add('active');
+                
+               
+                if (step.isFinal) {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    playHeartbeat(audioCtx);
+                }
+                
+                setTimeout(() => { 
+                    textDisplay.classList.remove('active');
+                    setTimeout(() => { currentStep++; runScript(); }, 600);
+                }, step.duration);
+            }
+        }
+
+        function start() {
+            if (!started && window.innerWidth > window.innerHeight) {
+                started = true;
+                audio.play().catch(e => console.log("Cần tương tác người dùng"));
+                runScript();
+                document.removeEventListener('click', start);
+                document.removeEventListener('touchstart', start);
+            }
+        }
+        document.addEventListener('click', start);
+        document.addEventListener('touchstart', start);
+    </script>
+</body>
+</html>
