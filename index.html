@@ -68,7 +68,7 @@
         const ctx = canvas.getContext('2d');
         const audio = document.getElementById('bgMusic');
         audio.src = MUSIC_LINK;
-        audio.volume = 0.1; // Giảm nhạc nền xuống 80%
+        audio.volume = 0.08; // Giảm nhạc nền xuống 80%
         
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         initCanvas();
@@ -115,13 +115,13 @@
         }
 
         const script = [
-            { text: "3", duration: 1000 },
-            { text: "2", duration: 1000 },
-            { text: "1", duration: 1000 },
-            { text: "Em ơi!", duration: 2000 },
-            { text: "Em đồng ý...", duration: 2000 },
-            { text: "Làm người yêu", duration: 2000 },
-            { text: "Của anh nhé?", duration: 2000 },
+            { text: "Happy birthday....", duration: 1500 },
+            { text: "Tuổi mới chúc em luôn xinh đẹp, mạnh khỏe", duration: 1500 },
+            { text: "Ngày càng thành công trong cuộc sống", duration: 1500 },
+            { text: "chúc em tất cả trừ vất vả❤️", duration: 2000 },
+            //{ text: "Em đồng ý...", duration: 2000 },//
+            //{ text: "Làm người yêu", duration: 2000 },//
+            //{ text: "Của anh nhé?", duration: 2000 },//
             { text: "<div class='heart-neon'>❤️</div><span style='font-size: 3rem; text-shadow: 0 0 10px #ff1493;'>Anh Yêu Em</span>", duration: 40000, isFinal: true }
         ];
 
